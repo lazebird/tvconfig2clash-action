@@ -1,0 +1,27 @@
+name: Test tvconfig2clash-action
+
+on:
+  push:
+    branches: ["**"]
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate rule provider from test input
+        run: |
+          node src/main.js test/config.json -o dist/output.yml
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: dist/output.yml

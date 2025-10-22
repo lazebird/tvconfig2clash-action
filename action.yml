@@ -1,0 +1,26 @@
+name: 'tvconfig2clash-action'
+description: 'Extract domains from tvconfig JSON and generate Clash/OpenClash rule provider YAML'
+author: 'lazebird <lazebird@gmail.com>'
+branding:
+  color: 'blue'
+  icon: 'globe'
+
+inputs:
+  config_path:
+    description: 'Path to tvconfig JSON configuration file'
+    required: true
+  output_path:
+    description: 'Output path for the generated YAML file'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Generate rule provider
+      shell: bash
+      run: |
+        node src/main.js "${{ inputs.config_path }}" -o "${{ inputs.output_path }}"
