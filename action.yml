@@ -1,4 +1,4 @@
-name: 'tvconfig2clash-action'
+name: '@lazebird/tvconfig2clash-action'
 description: 'Extract domains from tvconfig JSON and generate Clash/OpenClash rule provider YAML'
 author: 'lazebird <lazebird@gmail.com>'
 branding:
@@ -23,4 +23,4 @@ runs:
     - name: Generate rule provider
       shell: bash
       run: |
-        node src/main.js "${{ inputs.config_path }}" -o "${{ inputs.output_path }}"
+        node "${{ github.action_path }}/src/main.js" "${{ inputs.config_path }}" -o "${{ inputs.output_path }}"

@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 生成规则提供者
-        uses: lazebird/tvconfig2clash-action@v1
+        uses: lazebird/tvconfig2clash-action@0.2
         with:
           config_path: path/to/tvconfig.json
           output_path: path/to/output/site.yaml
@@ -107,7 +107,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 生成规则提供者
-        uses: lazebird/tvconfig2clash-action@v1
+        uses: lazebird/tvconfig2clash-action@0.2
         with:
           config_path: path/to/tvconfig.json
           output_path: path/to/output/site.yaml
