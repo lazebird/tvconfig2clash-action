@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Generate rule provider
-        uses: lazebird/tvconfig2clash-action@0.2
+        uses: lazebird/tvconfig2clash-action@main
         with:
           config_path: path/to/tvconfig.json
           output_path: path/to/output/site.yaml
@@ -107,7 +107,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Generate rule provider
-        uses: lazebird/tvconfig2clash-action@0.2
+        uses: lazebird/tvconfig2clash-action@main
         with:
           config_path: path/to/tvconfig.json
           output_path: path/to/output/site.yaml
