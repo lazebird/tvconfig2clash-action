@@ -1,5 +1,7 @@
 [English](README.md) | [中文](README_zh.md)
 
+[![Test tvconfig2clash-action](https://github.com/lazebird/tvconfig2clash-action/actions/workflows/test.yml/badge.svg)](https://github.com/lazebird/tvconfig2clash-action/actions/workflows/test.yml)
+
 # tvconfig2clash-action
 
 一个用于从 tvconfig JSON 配置中自动提取所有域名，并生成符合 Clash/OpenClash rule provider 规范（behavior: domain）的 YAML 文件的工具。核心实现位于 src/main.js，可独立执行，亦可作为 GitHub Action 使用（提供 action.yml）。

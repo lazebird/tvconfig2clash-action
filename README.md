@@ -1,5 +1,7 @@
 [English](README.md) | [中文](README_zh.md)
 
+[![Test tvconfig2clash-action](https://github.com/lazebird/tvconfig2clash-action/actions/workflows/test.yml/badge.svg)](https://github.com/lazebird/tvconfig2clash-action/actions/workflows/test.yml)
+
 # tvconfig2clash-action
 
 A tool that extracts all domains from a tvconfig JSON and generates a YAML file conforming to Clash/OpenClash rule provider format (behavior: domain). Core logic is in src/main.js, runnable as a standalone script or via GitHub Actions (action.yml provided).
