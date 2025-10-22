@@ -3,10 +3,16 @@ name: Test tvconfig2clash-action
 on:
   push:
     branches: ["**"]
+    paths-ignore:
+      - 'output/**'
+
+permissions:
+  contents: write
 
 jobs:
   generate:
     runs-on: ubuntu-latest
+    if: ${{ github.actor != 'github-actions[bot]' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,10 +24,19 @@ jobs:
 
       - name: Generate rule provider from test input
         run: |
-          node src/main.js test/config.json -o dist/output.yml
+          mkdir -p output
+          node src/main.js test/config.json -o output/site.yml
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: test-output
-          path: dist/output.yml
+          path: output/site.yml
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/site.yml
+          git commit -m "chore: update output/site.yml via test workflow [skip ci]" || echo "No changes to commit"
+          git push

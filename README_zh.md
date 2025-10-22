@@ -4,6 +4,33 @@
 
 一个用于从 tvconfig JSON 配置中自动提取所有域名，并生成符合 Clash/OpenClash rule provider 规范（behavior: domain）的 YAML 文件的工具。核心实现位于 src/main.js，可独立执行，亦可作为 GitHub Action 使用（提供 action.yml）。
 
+## 在 GitHub Actions 中使用
+从 Marketplace 直接使用本 Action（无需访问源码）：
+```yaml
+name: 生成 Clash Rule Provider
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 生成规则提供者
+        uses: lazebird/tvconfig2clash-action@v1
+        with:
+          config_path: path/to/tvconfig.json
+          output_path: path/to/output/site.yaml
+
+      - name: 上传制品
+        uses: actions/upload-artifact@v4
+        with:
+          name: clash-rule-provider
+          path: path/to/output/site.yaml
+```
+
 ## 功能概述
 - 读取指定的 tvconfig JSON（示例字段：`api_site`）。
 - 从各站点的 `api` 与 `detail` 字段中解析 URL，提取主机名。
@@ -64,10 +91,10 @@ node src/main.js
 ```
 
 ## 在 GitHub Actions 中使用
-可使用 action.yml 作为 Composite Action，或直接调用脚本：
+从 Marketplace 使用发布的 Action：
 ```yaml
-name: Generate Clash Rule Provider
-aon:
+name: 生成 Clash Rule Provider
+on:
   workflow_dispatch:
 
 jobs:
@@ -77,22 +104,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: 生成规则提供者
+        uses: lazebird/tvconfig2clash-action@v1
         with:
-          node-version: '20'
+          config_path: path/to/tvconfig.json
+          output_path: path/to/output/site.yaml
 
-      - name: Generate rule provider
-        run: |
-          node src/main.js path/to/tvconfig.json -o path/to/output/site.yaml
-
-      - name: Upload artifact
+      - name: 上传制品
         uses: actions/upload-artifact@v4
         with:
           name: clash-rule-provider
           path: path/to/output/site.yaml
 ```
-
 ## 实现原理与规则
 - URL 解析使用 Node.js 原生 `URL` 类，仅接受有效 URL。
 - 主机名提取与标准化：统一小写、去除空白。

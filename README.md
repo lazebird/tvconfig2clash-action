@@ -4,6 +4,33 @@
 
 A tool that extracts all domains from a tvconfig JSON and generates a YAML file conforming to Clash/OpenClash rule provider format (behavior: domain). Core logic is in src/main.js, runnable as a standalone script or via GitHub Actions (action.yml provided).
 
+## GitHub Actions Usage
+Use this Action from the Marketplace without accessing source files directly:
+```yaml
+name: Generate Clash Rule Provider
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate rule provider
+        uses: lazebird/tvconfig2clash-action@v1
+        with:
+          config_path: path/to/tvconfig.json
+          output_path: path/to/output/site.yaml
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: clash-rule-provider
+          path: path/to/output/site.yaml
+```
+
 ## Features
 - Read a tvconfig JSON (example field: `api_site`).
 - Parse URLs from the `api` and `detail` fields of each site and extract hostnames.
@@ -64,7 +91,7 @@ node src/main.js
 ```
 
 ## Use in GitHub Actions
-Use action.yml as a composite Action or invoke the script directly:
+Use the published Action from the Marketplace:
 ```yaml
 name: Generate Clash Rule Provider
 on:
@@ -77,14 +104,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Generate rule provider
-        run: |
-          node src/main.js path/to/tvconfig.json -o path/to/output/site.yaml
+        uses: lazebird/tvconfig2clash-action@v1
+        with:
+          config_path: path/to/tvconfig.json
+          output_path: path/to/output/site.yaml
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -92,7 +116,6 @@ jobs:
           name: clash-rule-provider
           path: path/to/output/site.yaml
 ```
-
 ## Implementation Rules
 - URL parsing uses Node.js native `URL` class; only valid URLs are accepted.
 - Hostname extraction and normalization: lowercase, remove whitespaces.
