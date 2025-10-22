@@ -24,17 +24,65 @@ function isValidUrl(u) {
 
 function extractHostname(u) {
   try {
-    return new URL(u).hostname.toLowerCase();
+    const host = new URL(u).hostname.toLowerCase();
+    // Filter out pure IPv4 addresses
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)) {
+      return null;
+    }
+    return host;
   } catch {
     return null;
   }
 }
 
+const psl = require('psl');
+
 function baseDomain(host) {
   if (!host || typeof host !== "string") return null;
-  const parts = host.split(".");
-  if (parts.length <= 2) return host;
-  return parts.slice(-2).join(".");
+
+  // Handle IP addresses
+  if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)) {
+    return host;
+  }
+
+  // Handle localhost
+  if (host === 'localhost') {
+    return host;
+  }
+
+  const parsed = psl.parse(host);
+  if (parsed.error) return null; // Handle parsing errors
+
+  if (parsed.domain) {
+    return parsed.domain;
+  } else {
+    return host;
+  }
+}
+
+function addProcessedDomain(host, domains) {
+  if (!host) return;
+
+  domains.add(host);
+
+  const base = baseDomain(host);
+  if (base && base !== host) {
+    domains.add(base);
+  }
+
+  const prefixes = ["api.", "collect.", "m3u8.", "cj.", "caiji."];
+  for (const prefix of prefixes) {
+    if (host.startsWith(prefix)) {
+      const stripped = host.replace(prefix, "");
+      if (stripped && stripped !== host) {
+        domains.add(stripped);
+        const strippedBase = baseDomain(stripped);
+        if (strippedBase && strippedBase !== stripped && strippedBase !== base) {
+          domains.add(strippedBase);
+        }
+      }
+    }
+  }
 }
 
 function collectDomains(config) {
@@ -47,36 +95,16 @@ function collectDomains(config) {
 
     if (isValidUrl(item.api)) {
       const h = extractHostname(item.api);
-      if (h) {
-        set.add(h);
-        const base = baseDomain(h);
-        if (base) set.add(base);
-        for (const prefix of ["api.", "collect.", "m3u8.", "cj.", "caiji."]) {
-          if (h.startsWith(prefix)) {
-            const stripped = h.replace(prefix, "");
-            if (stripped && stripped !== h) set.add(stripped);
-          }
-        }
-      }
+      addProcessedDomain(h, set);
     }
 
     if (isValidUrl(item.detail)) {
       const h2 = extractHostname(item.detail);
-      if (h2) {
-        set.add(h2);
-        const base2 = baseDomain(h2);
-        if (base2) set.add(base2);
-        for (const prefix of ["api.", "collect.", "m3u8.", "cj.", "caiji."]) {
-          if (h2.startsWith(prefix)) {
-            const stripped2 = h2.replace(prefix, "");
-            if (stripped2 && stripped2 !== h2) set.add(stripped2);
-          }
-        }
-      }
+      addProcessedDomain(h2, set);
     }
   }
 
-  const domains = Array.from(set).filter((d) => !/^\d+\.\d+\.\d+\.\d+$/.test(d));
+  const domains = Array.from(set);
   domains.sort((a, b) => (a > b ? 1 : a < b ? -1 : 0));
   return domains;
 }
@@ -85,7 +113,8 @@ function toYaml(domains) {
   const lines = [];
   lines.push("behavior: domain");
   lines.push("payload:");
-  for (const d of domains) {
+  const sortedDomains = [...domains].sort((a, b) => (a > b ? 1 : a < b ? -1 : 0));
+  for (const d of sortedDomains) {
     const safe = String(d).replace(/\s+/g, "").toLowerCase();
     if (!safe) continue;
     const labels = safe.split(".").filter(Boolean).length;
@@ -110,7 +139,10 @@ function generate(configPath, outPath) {
 
 module.exports = {
   readJSON,
+  isValidUrl,
+  extractHostname,
   collectDomains,
   toYaml,
   generate,
+  baseDomain,
 };
