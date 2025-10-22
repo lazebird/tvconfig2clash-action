@@ -24,4 +24,4 @@ runs:
       shell: bash
       run: |
         cd "${{ github.action_path }}"
-        node src/main.js "${{ inputs.config_path }}" -o "${{ inputs.output_path }}"
+        node src/main.js "${{ github.workspace }}/${{ inputs.config_path }}" -o "${{ github.workspace }}/${{ inputs.output_path }}"
