@@ -27,12 +27,6 @@ jobs:
           mkdir -p output
           node src/main.js test/config.json -o output/site.yml
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-output
-          path: output/site.yml
-
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
