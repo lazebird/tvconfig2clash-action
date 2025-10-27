@@ -24,6 +24,7 @@ jobs:
 
       - name: Generate rule provider from test input
         run: |
+          pnpm install
           mkdir -p output
           node src/main.js test/config.json -o output/site.yml
 
