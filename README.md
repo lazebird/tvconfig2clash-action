@@ -50,17 +50,11 @@ jobs:
           output_path: path/to/output/omnibox.json
           format: omnibox
 
-      - name: Upload Clash artifact
+      - name: Upload generated artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: clash-rule-provider
-          path: path/to/output/site.yaml
-
-      - name: Upload Omnibox artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: omnibox-config
-          path: path/to/output/omnibox.json
+          name: generated-configs
+          path: path/to/output/
 ```
 
 ### Standalone Script

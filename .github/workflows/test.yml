@@ -1,4 +1,4 @@
-name: Test tvconfig2clash-action
+name: Test tvconfig_formatter-action
 
 on:
   push:
@@ -22,16 +22,17 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Generate rule provider from test input
+      - name: Generate configs
         run: |
           npm install
           mkdir -p output
-          node src/main.js test/config.json -o output/site.yml
+          node src/main.js test/config.json -o output/site.yml -f clash
+          node src/main.js test/config.json -o output/omnibox.json -f omnibox
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/site.yml
-          git commit -m "chore: update output/site.yml via test workflow [skip ci]" || echo "No changes to commit"
+          git add output/site.yml output/omnibox.json
+          git commit -m "chore: update output files via test workflow [skip ci]" || echo "No changes to commit"
           git push
