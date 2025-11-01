@@ -1,5 +1,5 @@
-name: '@lazebird/tvconfig2clash-action'
-description: 'Extract domains from tvconfig JSON and generate Clash/OpenClash rule provider YAML'
+name: '@lazebird/tvconfig_formatter-action'
+description: 'Extract domains from tvconfig JSON and generate Clash/OpenClash rule provider YAML or Omnibox configuration file'
 author: 'lazebird <lazebird@gmail.com>'
 branding:
   color: 'blue'
@@ -10,8 +10,12 @@ inputs:
     description: 'Path to tvconfig JSON configuration file'
     required: true
   output_path:
-    description: 'Output path for the generated YAML file'
+    description: 'Output path for the generated file'
     required: true
+  format:
+    description: 'Output format (clash or omnibox)'
+    required: false
+    default: 'clash'
 
 runs:
   using: 'composite'
@@ -25,4 +29,4 @@ runs:
       run: |
         cd "${{ github.action_path }}"
         npm install
-        node src/main.js "${{ github.workspace }}/${{ inputs.config_path }}" -o "${{ github.workspace }}/${{ inputs.output_path }}"
+        node src/main.js "${{ github.workspace }}/${{ inputs.config_path }}" -o "${{ github.workspace }}/${{ inputs.output_path }}" -f "${{ inputs.format }}"
